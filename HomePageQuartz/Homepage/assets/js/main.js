@@ -248,4 +248,22 @@
     });
   });
 
+  document.getElementById('download-desktop-app').addEventListener('click', async () => {
+    try {
+      const response = await fetch('/api/build-installer', {method : 'POST'});
+      
+      if (!response.ok) {
+        throw new Error('Failed to build installer');
+      }
+
+    }
+    catch (error) {
+      console.error(error);
+    }
+
+  });
+
+
+  
+
 })()
