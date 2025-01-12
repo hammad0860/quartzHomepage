@@ -249,16 +249,28 @@
   });
 
   document.getElementById('download-desktop-app').addEventListener('click', async () => {
+    const popup = document.getElementById('popup-overlay'); 
+
     try {
+      popup.style.display = 'flex';
+
       const response = await fetch('/api/build-installer', {method : 'POST'});
       
       if (!response.ok) {
         throw new Error('Failed to build installer');
       }
 
+      popup.style.setProperty('display', 'none', 'important');
+
     }
     catch (error) {
       console.error(error);
+
+    }
+
+    finally {
+      popup.style.setProperty('display', 'none', 'important');
+
     }
 
   });

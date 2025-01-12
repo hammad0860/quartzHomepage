@@ -2,6 +2,7 @@ const express = require('express');
 const path = require('path');
 const fs = require('fs');
 const { exec, execFile } = require('child_process');
+const os = require('os');
 
 
 
@@ -16,34 +17,15 @@ app.use(express.static(path.join(__dirname, 'HomePageQuartz/Homepage')));
 app.post('/api/build-installer', (req, res) => {
     const electronAppPath = path.join(__dirname, 'quartz');
 
-    const installerPath = path.join(electronAppPath, 'out', 'make', 'squirrel.windows', 'x64');
-    const windowsDirectory = path.join(electronAppPath, 'out', 'make', 'squirrel.windows');
-    const command = 'npm run make';  
+    const platform = os.platform();
 
-    //Checks if the installer has already been built
-    if (!(fs.existsSync(windowsDirectory))) {
+    if (platform == 'win32') {
+        const installerPath = path.join(electronAppPath, 'out', 'make', 'squirrel.windows', 'x64');
+        const files = fs.readdirSync(installerPath);
+        const setupFile = files.find(file => file.endsWith('.exe'));
+    
         
-        const env = {
-            ...process.env,
-            TMP: 'C:\\TempElectron',
-            TEMP: 'C:\\TempElectron',
-          };
-
-        exec(command, { cwd: electronAppPath, env }, (error, stdout, stderr) => {
-            if (error) {
-            console.error(`Error building installer: ${error.message}`);
-            return res.status(500).json({ message: 'Build failed.' });
-            }
-            if (stderr) {
-            console.error(`stderr: ${stderr}`);
-            }
-            console.log(`stdout: ${stdout}`);
-
-
-        const files = fs.readdirSync(installerPath);
-        const setupFile = files.find(file => file.endsWith('.exe'));
-    
-        //Executes the installer for windows
+        
         execFile(path.join(installerPath, setupFile), (error, stdout, stderr) => {
             if (error) {
             console.error(`Error executing installer: ${error.message}`);
@@ -52,33 +34,10 @@ app.post('/api/build-installer', (req, res) => {
             if (stderr) {
             console.error(`stderr: ${stderr}`);
             }
-            console.log(`stdout: ${stdout}`);
+            return res.status(200).json({ message: 'Installer executed successfully.' });
+            
         })
-     });
-
     }
-    else {
-        const files = fs.readdirSync(installerPath);
-        const setupFile = files.find(file => file.endsWith('.exe'));
-    
-        //Executes the installer for windows
-        execFile(path.join(installerPath, setupFile), (error, stdout, stderr) => {
-            if (error) {
-            console.error(`Error executing installer: ${error.message}`);
-            return res.status(500).json({ message: 'Failed to execute installer.' });
-            }
-            if (stderr) {
-            console.error(`stderr: ${stderr}`);
-            }
-            console.log(`stdout: ${stdout}`);
-        }
-    )
-    }
-
-    
-
-
-
 
 });
 
