@@ -60,25 +60,27 @@ app.post('/api/build-installer', (req, res) => {
         });
     }
 
-    if (platform === 'linux') {
-        const installerPath = path.join(electronAppPath, 'out', 'make', 'appimage'); 
-        const files = fs.readdirSync(installerPath);
-        const appImageFile = files.find(file => file.endsWith('.AppImage')); 
-    
 
-        const appImageFullPath = path.join(installerPath, appImageFile);
-        fs.chmodSync(appImageFullPath, '755');
     
-        execFile(appImageFullPath, (error, stdout, stderr) => {
+    // Executes the installer based for Linux
+    else if (platform === 'linux') {
+        const installerPath = path.join(electronAppPath, 'out', 'make', 'deb');
+        const files = fs.readdirSync(installerPath);
+        const debFile = files.find(file => file.endsWith('.deb'));
+    
+    
+        const debFullPath = path.join(installerPath, debFile);
+    
+        execFile('sudo', ['dpkg', '-i', debFullPath], (error, stdout, stderr) => {
             if (error) {
-                console.error(`Error executing AppImage: ${error.message}`);
-                return res.status(500).json({ message: 'Failed to execute AppImage.' });
+                console.error(`Error executing Linux installer: ${error.message}`);
+                return res.status(500).json({ message: 'Failed to execute Linux Installer' });
             }
             if (stderr) {
                 console.error(`stderr: ${stderr}`);
             }
-            console.log('AppImage executed successfully.');
-            return res.status(200).json({ message: 'AppImage executed successfully.' });
+            console.log('Linux installer executed successfully.');
+            return res.status(200).json({ message: 'Linux installer executed successfully.' });
         });
     }
 
