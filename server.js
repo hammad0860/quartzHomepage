@@ -42,7 +42,7 @@ app.post('/api/build-installer', (req, res) => {
 
     // Executes the installer based for Mac
     else if (platform === 'darwin') {
-        const installerPath = path.join(electronAppPath, 'out', 'make', 'dmg');
+        const installerPath = path.join(electronAppPath, 'out', 'make');
         const files = fs.readdirSync(installerPath);
         const dmgFile = files.find(file => file.endsWith('.dmg'));
     
@@ -64,7 +64,7 @@ app.post('/api/build-installer', (req, res) => {
     
     // Executes the installer based for Linux
     else if (platform === 'linux') {
-        const installerPath = path.join(electronAppPath, 'out', 'make', 'deb');
+        const installerPath = path.join(electronAppPath, 'out', 'make');
         const files = fs.readdirSync(installerPath);
         const debFile = files.find(file => file.endsWith('.deb'));
     
