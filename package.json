@@ -5,7 +5,8 @@
     },
 
     "scripts": {
-    "start": "node main.js"
+    "start": "node main.js",
+    "make": "cd ./quartz && npm run make"
     
   }
 }
