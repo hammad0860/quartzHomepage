@@ -1,12 +1,11 @@
 {
     "name": "homepagequartz",
     "dependencies": {
+        "adm-zip": "^0.5.16",
         "express": "^4.21.2"
     },
-
     "scripts": {
-    "start": "node main.js",
-    "make": "cd ./quartz && npm run make"
-    
-  }
+        "start": "node main.js",
+        "make": "cd ./quartz && npm run make"
+    }
 }

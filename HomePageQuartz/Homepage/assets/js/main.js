@@ -264,15 +264,13 @@
     const popup = document.getElementById('popup-overlay'); 
 
     try {
-      popup.style.display = 'flex';
 
-      const response = await fetch('/api/build-installer', {method : 'POST'});
-      
+      window.location.href = '/api/build-installer';
+
       if (!response.ok) {
         throw new Error('Failed to build installer');
       }
 
-      popup.style.setProperty('display', 'none', 'important');
 
     }
     catch (error) {
@@ -280,10 +278,7 @@
 
     }
 
-    finally {
-      popup.style.setProperty('display', 'none', 'important');
 
-    }
 
   });
 

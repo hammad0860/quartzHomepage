@@ -3,7 +3,8 @@ const path = require('path');
 const fs = require('fs');
 const { exec, execFile } = require('child_process');
 const os = require('os');
-
+const { execSync } = require('child_process');
+const AdmZip = require("adm-zip");
 
 
 
@@ -14,73 +15,96 @@ const PORT = process.env.PORT || 3000;
 app.use(express.static(path.join(__dirname, 'HomePageQuartz/Homepage')));
 
 
-app.post('/api/build-installer', (req, res) => {
+app.get('/api/build-installer', (req, res) => {
     const electronAppPath = path.join(__dirname, 'quartz');
-
     const platform = os.platform();
+    const command = 'npm run make';
 
-    // Executes the installer based for Windows
+
+
+    // Checks if the installer already exists for different Os systems
+    //Creates the installer if it does not exist
+    if (platform == "win32"){
+        const installationPath = path.join(electronAppPath, 'out', 'make', 'squirrel.windows', 'x64');
+        if (!fs.existsSync(installationPath)) {
+           execSync(command);
+        }
+
+    }
+    else if (platform == "darwin"){
+        const installationPath = path.join(electronAppPath, 'out', 'make');
+        if (!fs.existsSync(installationPath)){
+            const files = fs.readdirSync(installationPath);
+            const dmgFile = files.find(file => file.endsWith('.dmg'));
+            if (!dmgFile){
+                execSync(command);
+            } 
+        
+         }
+
+    }
+    else {
+        const installationPath = path.join(electronAppPath, 'out', 'make');
+        if (!fs.existsSync(installationPath)){
+            const files = fs.readdirSync(installationPath);
+            const dmgFile = files.find(file => file.endsWith('.deb'));
+            if (!dmgFile){
+                execSync(command);
+            } 
+        
+         }
+    }
+
+
+
+
+    
+    // Saves the installer based for Windows
     if (platform == 'win32') {
         const installerPath = path.join(electronAppPath, 'out', 'make', 'squirrel.windows', 'x64');
         const files = fs.readdirSync(installerPath);
         const setupFile = files.find(file => file.endsWith('.exe'));
-    
+        const setupFullPath = path.join(installerPath, setupFile);  
         
         
-        execFile(path.join(installerPath, setupFile), (error, stdout, stderr) => {
-            if (error) {
-            console.error(`Error executing Windows installer: ${error.message}`);
-            return res.status(500).json({ message: 'Failed to execute Windows installer.' });
+        return res.download(setupFullPath, setupFile, (err) => {
+            if (err) {
+                console.error(`Error downloading Windows installer: ${err.message}`);
+                return res.status(500).json({ message: 'Failed to download Windows installer.' });
             }
-            if (stderr) {
-            console.error(`stderr: ${stderr}`);
-            }
-            return res.status(200).json({ message: 'Windows Installer executed successfully.' });
-
-        })
+        });
     }
 
-    // Executes the installer based for Mac
+    // Saves the installer based for Mac
     else if (platform === 'darwin') {
         const installerPath = path.join(electronAppPath, 'out', 'make');
         const files = fs.readdirSync(installerPath);
         const dmgFile = files.find(file => file.endsWith('.dmg'));
-    
+        const dmgFullPath = path.join(installerPath, dmgFile);
+
        
-        execFile('open', [path.join(installerPath, dmgFile)], (error, stdout, stderr) => {
-            if (error) {
-                console.error(`Error executing Mac installer: ${error.message}`);
-                return res.status(500).json({ message: 'Failed to execute Mac installer.' });
+        return res.download(dmgFullPath, dmgFile, (err) => {
+            if (err) {
+                console.error(`Error downloading Mac installer: ${err.message}`);
+                return res.status(500).json({ message: 'Failed to download Mac installer.' });
             }
-            if (stderr) {
-                console.error(`stderr: ${stderr}`);
-            }
-            console.log('Mac installer executed successfully.');
-            return res.status(200).json({ message: 'Mac installer executed successfully.' });
         });
     }
 
 
     
-    // Executes the installer based for Linux
+    // Saves the installer based for Linux
     else if (platform === 'linux') {
         const installerPath = path.join(electronAppPath, 'out', 'make');
         const files = fs.readdirSync(installerPath);
         const debFile = files.find(file => file.endsWith('.deb'));
-    
-    
         const debFullPath = path.join(installerPath, debFile);
     
-        execFile('sudo', ['dpkg', '-i', debFullPath], (error, stdout, stderr) => {
-            if (error) {
-                console.error(`Error executing Linux installer: ${error.message}`);
-                return res.status(500).json({ message: 'Failed to execute Linux Installer' });
+        return res.download(debFullPath, debFile, (err) => {
+            if (err) {
+                console.error(`Error downloading Linux installer: ${err.message}`);
+                return res.status(500).json({ message: 'Failed to download Linux installer.' });
             }
-            if (stderr) {
-                console.error(`stderr: ${stderr}`);
-            }
-            console.log('Linux installer executed successfully.');
-            return res.status(200).json({ message: 'Linux installer executed successfully.' });
         });
     }
 
@@ -97,3 +121,6 @@ app.get('*', (req, res) => {
 app.listen(PORT, () => {
     console.log(`Server listening on port ${PORT}`);
   });
+
+
+
