@@ -7,7 +7,7 @@
     "scripts": {
         "start": "node main.js",
         "make": "cd ./quartz && npm run make",
-        "build": "git submodule update --init --recursive && npm install && npm run make",
+        "build": "git submodule update --init --recursive && cd quartz && git checkout muhammadBranchTask3 && npm install && npm run make",
         "postinstall": "npm install && cd ./quartz && npm install"
 
     }
