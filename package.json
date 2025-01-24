@@ -6,6 +6,7 @@
     },
     "scripts": {
         "start": "node main.js",
-        "make": "cd ./quartz && npm run make"
+        "make": "cd ./quartz && npm run make",
+        "build": "git submodule update --init --recursive && npm install && npm run make"
     }
 }
