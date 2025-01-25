@@ -251,22 +251,26 @@
   document.getElementById('download-desktop-app').addEventListener('click', async () => {
     
     
+    const platform = navigator.platform.toLowerCase();
 
-      try {
-        const response = await fetch('/api/download-installer');
-      
-        if (!response.ok) {
-          throw new Error('Failed to download installer');
-        }
-      
-        console.log('Installer download successful');
-      } catch (error) {
-        console.error(error);
-      }
+    // Hosted installer file URLs for different platforms
+    const hostedInstallers = {
+        win32: 'https://myriade-installers.nyc3.digitaloceanspaces.com/Myriade-1.0.0%20Setup.exe',
+       // darwin: '
+       // linux: 
+    };
+
+    // Select the appropriate installer for the platform
+    const installerURL = hostedInstallers[platform];
+   
+    if (installerURL) {
+      window.location.href = installerURL;
+    } else {
+        return res.status(400).json({ message: 'Unsupported platform' });
+    }
 
 
-
-  });
+  }); 
 
 
   
