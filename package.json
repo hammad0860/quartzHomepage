@@ -5,9 +5,7 @@
         "express": "^4.21.2"
     },
     "scripts": {
-        "start": "node main.js",
-        "make": "cd ./quartz && npm run make",
-        "build": "npm ci && git submodule update --init --recursive && cd quartz && git checkout muhammadBranchTask3 && npm ci"
+        "start": "node main.js"
 
     }
 }

@@ -15,99 +15,26 @@ const PORT = process.env.PORT || 3000;
 app.use(express.static(path.join(__dirname, 'HomePageQuartz/Homepage')));
 
 
-app.get('/api/build-installer', (req, res) => {
-    const electronAppPath = path.join(__dirname, 'quartz');
+
+// Route for downloading the installer
+app.get('/api/download-installer', (req, res) => {
     const platform = os.platform();
-    const command = 'npm run make';
 
+    // Hosted installer file URLs for different platforms
+    const hostedInstallers = {
+        win32: 'https://myriade-installers.nyc3.digitaloceanspaces.com/Myriade-1.0.0%20Setup.exe',
+       // darwin: '
+       // linux: 
+    };
 
-
-    // Checks if the installer already exists for different Os systems
-    //Creates the installer if it does not exist
-    if (platform == "win32"){
-        const installationPath = path.join(electronAppPath, 'out', 'make', 'squirrel.windows', 'x64');
-        if (!fs.existsSync(installationPath)) {
-           execSync(command);
-        }
-
+    // Select the appropriate installer for the platform
+    const installerURL = hostedInstallers[platform];
+   
+    if (installerURL) {
+        return res.redirect(installerURL);
+    } else {
+        return res.status(400).json({ message: 'Unsupported platform' });
     }
-    else if (platform == "darwin"){
-        const installationPath = path.join(electronAppPath, 'out', 'make');
-        if (!fs.existsSync(installationPath)){
-            const files = fs.readdirSync(installationPath);
-            const dmgFile = files.find(file => file.endsWith('.dmg'));
-            if (!dmgFile){
-                execSync(command);
-            } 
-        
-         }
-
-    }
-    else {
-        const installationPath = path.join(electronAppPath, 'out', 'make');
-        if (!fs.existsSync(installationPath)){
-            const files = fs.readdirSync(installationPath);
-            const dmgFile = files.find(file => file.endsWith('.deb'));
-            if (!dmgFile){
-                execSync(command);
-            } 
-        
-         }
-    }
-
-
-
-
-    
-    // Saves the installer based for Windows
-    if (platform == 'win32') {
-        const installerPath = path.join(electronAppPath, 'out', 'make', 'squirrel.windows', 'x64');
-        const files = fs.readdirSync(installerPath);
-        const setupFile = files.find(file => file.endsWith('.exe'));
-        const setupFullPath = path.join(installerPath, setupFile);  
-        
-        
-        return res.download(setupFullPath, setupFile, (err) => {
-            if (err) {
-                console.error(`Error downloading Windows installer: ${err.message}`);
-                return res.status(500).json({ message: 'Failed to download Windows installer.' });
-            }
-        });
-    }
-
-    // Saves the installer based for Mac
-    else if (platform === 'darwin') {
-        const installerPath = path.join(electronAppPath, 'out', 'make');
-        const files = fs.readdirSync(installerPath);
-        const dmgFile = files.find(file => file.endsWith('.dmg'));
-        const dmgFullPath = path.join(installerPath, dmgFile);
-
-       
-        return res.download(dmgFullPath, dmgFile, (err) => {
-            if (err) {
-                console.error(`Error downloading Mac installer: ${err.message}`);
-                return res.status(500).json({ message: 'Failed to download Mac installer.' });
-            }
-        });
-    }
-
-
-    
-    // Saves the installer based for Linux
-    else if (platform === 'linux') {
-        const installerPath = path.join(electronAppPath, 'out', 'make');
-        const files = fs.readdirSync(installerPath);
-        const debFile = files.find(file => file.endsWith('.deb'));
-        const debFullPath = path.join(installerPath, debFile);
-    
-        return res.download(debFullPath, debFile, (err) => {
-            if (err) {
-                console.error(`Error downloading Linux installer: ${err.message}`);
-                return res.status(500).json({ message: 'Failed to download Linux installer.' });
-            }
-        });
-    }
-
 });
 
 

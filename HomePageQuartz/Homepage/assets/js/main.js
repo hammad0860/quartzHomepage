@@ -265,10 +265,10 @@
 
     try {
 
-      window.location.href = '/api/build-installer';
+      window.location.href = '/api/download-installer';
 
       if (!response.ok) {
-        throw new Error('Failed to build installer');
+        throw new Error('Failed to download installer');
       }
 
 
