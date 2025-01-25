@@ -250,19 +250,7 @@
 
   document.getElementById('download-desktop-app').addEventListener('click', async () => {
     
-    if (sessionStorage.getItem('downloadClicked') === 'true') {
-      console.log("This download has already been initiated for this session.");
-      return;
-    }
-
-    sessionStorage.setItem('downloadClicked', 'true');
-
-  
-
-
     
-    const popup = document.getElementById('popup-overlay'); 
-
     try {
 
       window.location.href = '/api/download-installer';
