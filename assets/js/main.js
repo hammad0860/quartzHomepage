@@ -251,20 +251,18 @@
   document.getElementById('download-desktop-app').addEventListener('click', async () => {
     
     
-    try {
 
-      window.location.href = '/api/download-installer';
-
-      if (!response.ok) {
-        throw new Error('Failed to download installer');
+      try {
+        const response = await fetch('/api/download-installer');
+      
+        if (!response.ok) {
+          throw new Error('Failed to download installer');
+        }
+      
+        console.log('Installer download successful');
+      } catch (error) {
+        console.error(error);
       }
-
-
-    }
-    catch (error) {
-      console.error(error);
-
-    }
 
 
 
